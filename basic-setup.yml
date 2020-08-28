@@ -107,9 +107,8 @@
       when: crt_stat.stat.exists
 
     - name: check if .ovpn files exist
-      find:
-        path: /home/{{ host_username.stdout }}/Downloads
-        patterns: "*.ovpn"
+      stat:
+        path: /home/{{ host_username.stdout }}/Downloads/*.ovpn
       register: ovpn_stat
 
     - name: Move .ovpn files from ~/Downloads/ to /etc/NetworkManager/system-connections/
