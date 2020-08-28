@@ -80,7 +80,7 @@
       set_fact:
         rpm_list: "{{ find_results_rhit.files | map(attribute='path') | list }}"
 
-    - name: install {{ rpm_list }} with yum
+    - name: install rpm_list with yum
       become: true
       yum:
         name: "{{ rpm_list }}"
@@ -123,7 +123,7 @@
 
     - name: change file permissions
       file:
-        path: /etc/pki/tls/certs/2015-RH-IT-Root-CA.pem
+        path: /etc/pki/tls/certs/RH-IT-Root-CA.pem
         mode: 644
 # TODO: Test if that'll work with /etc/NetworkManager/system-connections/"*" instead of all this
     - name: ensure directories in /etc/NetworkManager/system-connections are 0755
