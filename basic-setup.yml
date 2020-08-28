@@ -132,14 +132,6 @@
       args:
         warn: false
 
-# TODO: Test if that'll work with /etc/NetworkManager/system-connections/"*" instead of all this
-    - name: ensure directories in /etc/NetworkManager/system-connections are 0755
-      vars:
-        path: /etc/NetworkManager/system-connections
-      command: find {{ path }} -type d -exec chmod -c 0755 {} \;
-      register: chmod_result
-      changed_when: "chmod_result.stdout != \"\""
-
     - name: reload connection
       command: nmcli connection reload
 
