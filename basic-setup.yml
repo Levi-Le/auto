@@ -16,7 +16,8 @@
 # This enables repositories to download newdoc & downloads newdoc
     - name: enable mareksu/newdoc repository
       command: dnf copr enable mareksu/newdoc -y
-      warn: false
+      args:
+        warn: false
 
     - name: install newdoc
       dnf:
