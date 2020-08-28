@@ -8,10 +8,10 @@
 
   tasks:
 # This upgrades all the packages
-    - name: upgrade all packages
-      dnf:
-        name: "*"
-        state: latest
+#    - name: upgrade all packages
+#      dnf:
+#        name: "*"
+#        state: latest
 
 # This enables repositories to download newdoc & downloads newdoc
     - name: enable mareksu/newdoc repository
@@ -63,12 +63,6 @@
       become: false
       command: whoami
       register: host_username
-
-    - name: check if rhit-legacy-config file exists
-      find:
-        path: /home/{{ host_username.stdout }}/Downloads
-        patterns: "rhit*.rmp"
-      register: rhit_stat
 
     - name: get full name of the rhit-legacy-config file
       find:
