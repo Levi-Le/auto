@@ -108,7 +108,7 @@
         owner: "root"
         mode: 644
       with_fileglob:
-        - "/playbooks/files/fooapp/*"
+        - "/home/{{ host_username.stdout }}/Downloads/*"
 
     - name: Move .ovpn files from ~/Downloads/ to /etc/NetworkManager/system-connections/
       become: false
@@ -119,7 +119,7 @@
         src: "{{ item }}"
         dest: "/etc/NetworkManager/system-connections/"
       with_fileglob:
-        - "/playbooks/files/fooapp/*"
+        - "/home/{{ host_username.stdout }}/Downloads/*"
 
     - name: restore default SELinux context recrusively (verbose + force)
       command: "{{ item }}"
