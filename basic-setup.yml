@@ -8,10 +8,10 @@
 
   tasks:
 # This upgrades all the packages
-#    - name: upgrade all packages
-#      dnf:
-#        name: "*"
-#        state: latest
+    - name: upgrade all packages
+      dnf:
+        name: "*"
+        state: latest
 
 # This enables repositories to download newdoc & downloads newdoc
     - name: enable mareksu/newdoc repository
