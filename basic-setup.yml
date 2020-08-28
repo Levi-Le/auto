@@ -1,0 +1,144 @@
+---
+
+# This script installs some basic programs + sets up kinit and VPN. You need to download files and certificates beforehand from the google drive
+- name: basic setup, kinit & VPN
+  hosts: localhost
+  become: true
+  become_user: root
+
+  tasks:
+# This upgrades all the packages
+    - name: upgrade all packages
+      dnf:
+        name: "*"
+        state: latest
+
+# This enables repositories to download newdoc & downloads newdoc
+    - name: enable mareksu/newdoc repository
+      command: dnf copr enable mareksu/newdoc -y
+
+    - name: install newdoc
+      dnf:
+        name: python3-newdoc
+        state: latest
+
+# This downloads Flatpack & enables Flathub remote so we can install BlueJeans
+    - name: install flatpak
+      dnf:
+        name: flatpak
+        state: latest
+
+    - name: add the flatpak repository remote
+      flatpak_remote:
+        name: flathub
+        state: present
+        flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+        method: user
+
+    - name: install bluejeans
+      flatpak:
+        name: com.bluejeans.BlueJeans
+        state: present
+        method: user
+
+# This installs some basics
+    - name: install them basics
+      dnf:
+        name:
+          - rubygem-asciidoctor
+          - gimp
+          - nano
+        state: latest
+
+  # This sets up kinit
+  # Works for older Fedora versions (30&31). Fedora 32 lacks the dependency package pam_krb5. If u pull it from the rpm archive it requires another pam package that is lacking. Oh well
+
+    - name: find the name of the user
+      become: false
+      command: whoami
+      register: host_username
+
+    - name: check if rhit-legacy-config file exists
+      find:
+        path: /home/{{ host_username.stdout }}/Downloads
+        patterns: "rhit*.rmp"
+      register: rhit_stat
+
+    - name: get full name of the rhit-legacy-config file
+      find:
+        path: /home/{{ host_username.stdout }}/Downloads
+        patterns: "rhit*.rpm"
+      register: find_results_rhit
+
+    - name: ceate a list of the rpms to use with the yum install command
+      set_fact:
+        rpm_list: "{{ find_results_rhit.files | map(attribute='path') | list }}"
+
+    - name: install {{ rpm_list }} with yum
+      become: true
+      yum:
+        name: "{{ rpm_list }}"
+        state: present
+
+    - name: run autoconfig
+      command:  /usr/share/rhit-iam/rhit_legacy_authconfig
+
+# This sets up VPN
+    - name: install openvpn
+      dnf:
+        name:
+          - NetworkManager-openvpn
+          - NetworkManager-openvpn-gnome
+        state: latest
+
+    - name: check if IT Root CA Certificate exists
+      find:
+        path: /home/{{ host_username.stdout }}/Downloads
+        patterns: "RH*.crt"
+      register: crt_stat
+
+    - name: Move and rename the IT Root CA Certificate
+      command: mv ~/Downloads/RH*.crt /etc/pki/tls/certs/2015-RH-IT-Root-CA.pem
+      when: crt_stat.stat.exists
+
+    - name: check if .ovpn files exist
+      find:
+        path: /home/{{ host_username.stdout }}/Downloads
+        patterns: "*.ovpn"
+      register: ovpn_stat
+
+    - name: Move .ovpn files from ~/Downloads/ to /etc/NetworkManager/system-connections/
+      command: mv ~/Downloads/*.ovpn /etc/NetworkManager/system-connections/
+      when: ovpn_stat.stat.exists
+
+    - name: restore default SELinux context recrusively (verbose + force)
+      command: "{{ item }}"
+      loop:
+        - restorecon -RvF /etc/pki/tls/certs/
+        - restorecon -RvF /etc/NetworkManager/system-connections/
+
+    - name: change file permissions
+      file:
+        path: /etc/pki/tls/certs/2015-RH-IT-Root-CA.pem
+        mode: 644
+# TODO: Test if that'll work with /etc/NetworkManager/system-connections/"*" instead of all this
+    - name: ensure directories in /etc/NetworkManager/system-connections are 0755
+      vars:
+        path: /etc/NetworkManager/system-connections
+      command: find {{ path }} -type d -exec chmod -c 0755 {} \;
+      register: chmod_result
+      changed_when: "chmod_result.stdout != \"\""
+
+    - name: ensure files in /etc/NetworkManager/system-connections are 0600
+      vars:
+        path: /etc/NetworkManager/system-connections
+      command: find {{ path }} -type f -exec chmod -c 0600 {} \;
+      register: chmod_result
+      changed_when: "chmod_result.stdout != \"\""
+
+    - name: reload configurations
+      command: nmcli connection reload
+
+# TODO: I probably need to figure out how to make this one work
+#    - name: connect to VPN
+#      command: nmcli connection up id "Brno (BRQ)" --ask
