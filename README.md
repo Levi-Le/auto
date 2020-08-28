@@ -4,7 +4,11 @@
 
  Enter your password
 
-2. Go to https://drive.google.com/drive/folders/1yLrwmD7ZpIPt9sgJk7IN-dWVYhehQukg?usp=sharing to download all the files, including those in the VPN folder. Ensure they are all downloaded into the Downloads folder, which is usually the default
+2. Go to https://drive.google.com/drive/folders/1yLrwmD7ZpIPt9sgJk7IN-dWVYhehQukg?usp=sharing to download all the files.
+
+You are prompted to enter you kerberos ID and password.
+
+Download all the files in the auto folder, including those in the VPN folder. Ensure they are all downloaded into the Downloads directory, which is usually the default.
 
 3. Open up the Terminal and clone the remote repo
 

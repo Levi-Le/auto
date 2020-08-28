@@ -16,6 +16,7 @@
 # This enables repositories to download newdoc & downloads newdoc
     - name: enable mareksu/newdoc repository
       command: dnf copr enable mareksu/newdoc -y
+      warn: false
 
     - name: install newdoc
       dnf:
@@ -46,8 +47,12 @@
       dnf:
         name:
           - rubygem-asciidoctor
+          - virt-manager
+          - mediawriter
           - gimp
           - nano
+          - vim
+          - htop
         state: latest
 
   # This sets up kinit
@@ -92,9 +97,10 @@
         state: latest
 
     - name: check if IT Root CA Certificate exists
-      find:
-        path: /home/{{ host_username.stdout }}/Downloads
-        patterns: "RH*.crt"
+      stat:
+        find:
+          path: /home/{{ host_username.stdout }}/Downloads
+          patterns: "RH*.crt"
       register: crt_stat
 
     - name: Move and rename the IT Root CA Certificate
