@@ -103,7 +103,7 @@
       register: crt_stat
 
     - name: Move and rename the IT Root CA Certificate
-      command: mv ~/Downloads/RH*.crt /etc/pki/tls/certs/RH-IT-Root-CA.pem
+      command: mv ~/Downloads/RH-IT-Root-CA.crt /etc/pki/tls/certs/RH-IT-Root-CA.pem
       when: crt_stat.stat.exists
 
     - name: check if .ovpn files exist
@@ -140,7 +140,7 @@
       register: chmod_result
       changed_when: "chmod_result.stdout != \"\""
 
-    - name: reload configurations
+    - name: reload connection
       command: nmcli connection reload
 
 # TODO: I probably need to figure out how to make this one work
