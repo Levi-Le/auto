@@ -112,7 +112,7 @@
       register: ovpn_stat
 
     - name: Move .ovpn files from ~/Downloads/ to /etc/NetworkManager/system-connections/
-      command: mv ~/Downloads/*.ovpn /etc/NetworkManager/system-connections/
+      command: mv /home/{{ host_username.stdout }}/Downloads/*.ovpn /etc/NetworkManager/system-connections/
       when: ovpn_stat.stat.exists
 
     - name: restore default SELinux context recrusively (verbose + force)
