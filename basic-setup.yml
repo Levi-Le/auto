@@ -81,25 +81,22 @@
     - name: Copy each file over that matches the given pattern
       copy:
         src: "{{ item }}"
-        dest: "/etc/pki/tls/certs/"
+        dest: "/etc/pki/tls/certs/2015-RH-IT-Root-CA.pem"
         mode: 0644
       with_fileglob:
         - "/home/{{ host_username.stdout }}/Downloads/*"
 
-    - name: rename .crt to .pem
-      command: mv /etc/NetworkManager/system-connections/RH-IT-Root-CA.crt /etc/NetworkManager/system-connections/2015-RH-IT-Root-CA.pem
-
     - name: Move .ovpn files from ~/Downloads/ to /etc/NetworkManager/system-connections/
       become: false
-      debug: msg={{ lookup('fileglob', '~/Downloads/*.ovpn') }}
+      debug: msg={{ lookup('fileglob1', '~/Downloads/*.ovpn') }}
 
     - name: Copy each file over that matches the given pattern
       copy:
         src: "{{ item }}"
         dest: "/etc/NetworkManager/system-connections/"
         mode: 0600
-      with_fileglob:
-        - "/home/{{ host_username.stdout }}/Downloads/*.ovpn"
+      with_fileglob1:
+        - "/home/{{ host_username.stdout }}/Downloads/*"
 
     - name: restore default SELinux context recrusively (verbose + force)
       command: "{{ item }}"
