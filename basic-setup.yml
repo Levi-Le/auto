@@ -105,8 +105,6 @@
       copy:
         src: "{{ item }}"
         dest: "/etc/pki/tls/certs/RH-IT-Root-CA.pem"
-        owner: "root"
-        mode: 644
       with_fileglob:
         - "/home/{{ host_username.stdout }}/Downloads/*"
 
@@ -126,6 +124,11 @@
       loop:
         - restorecon -RvF /etc/pki/tls/certs/
         - restorecon -RvF /etc/NetworkManager/system-connections/
+
+    - name: change file permissions
+      file:
+        path: /etc/pki/tls/certs/RH-IT-Root-CA.pem
+        mode: 644
 
 # TODO: Test if that'll work with /etc/NetworkManager/system-connections/"*" instead of all this
     - name: ensure directories in /etc/NetworkManager/system-connections are 0755
