@@ -2,7 +2,7 @@
 
 # This script installs some basic programs + sets up kinit and VPN. You need to download files and certificates beforehand from the google drive
 - name: basic setup, kinit & VPN
-  hosts: localhost
+  hosts: target
   become: true
   become_user: root
 
@@ -104,7 +104,7 @@
       register: crt_stat
 
     - name: Move and rename the IT Root CA Certificate
-      command: mv ~/Downloads/RH*.crt /etc/pki/tls/certs/2015-RH-IT-Root-CA.pem
+      command: mv ~/Downloads/RH*.crt /etc/pki/tls/certs/RH-IT-Root-CA.pem
       when: crt_stat.stat.exists
 
     - name: check if .ovpn files exist
