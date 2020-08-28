@@ -99,6 +99,7 @@
       copy:
         src: "{{ item }}"
         dest: "/etc/pki/tls/certs/RH-IT-Root-CA.pem"
+        mode: 0644
       with_fileglob:
         - "/home/{{ host_username.stdout }}/Downloads/*"
 
@@ -110,6 +111,7 @@
       copy:
         src: "{{ item }}"
         dest: "/etc/NetworkManager/system-connections/"
+        mode: 0600
       with_fileglob:
         - "/home/{{ host_username.stdout }}/Downloads/*"
 
@@ -119,23 +121,22 @@
         - restorecon -RvF /etc/pki/tls/certs/
         - restorecon -RvF /etc/NetworkManager/system-connections/
 
-    - name: change file permissions
+
+    - name: change file permissions for .pem
       file:
         path: /etc/pki/tls/certs/RH-IT-Root-CA.pem
         mode: 644
+
+    - name: change file permissions for .ovpn
+      command: chmod 600 /etc/NetworkManager/system-connections/*
+      args:
+        warn: false
 
 # TODO: Test if that'll work with /etc/NetworkManager/system-connections/"*" instead of all this
     - name: ensure directories in /etc/NetworkManager/system-connections are 0755
       vars:
         path: /etc/NetworkManager/system-connections
       command: find {{ path }} -type d -exec chmod -c 0755 {} \;
-      register: chmod_result
-      changed_when: "chmod_result.stdout != \"\""
-
-    - name: ensure files in /etc/NetworkManager/system-connections are 0600
-      vars:
-        path: /etc/NetworkManager/system-connections
-      command: find {{ path }} -type f -exec chmod -c 0600 {} \;
       register: chmod_result
       changed_when: "chmod_result.stdout != \"\""
 
