@@ -97,23 +97,29 @@
           - NetworkManager-openvpn-gnome
         state: latest
 
-    - name: check if IT Root CA Certificate exists
-      stat:
-        path: /home/{{ host_username.stdout }}/Downloads/RH-IT-Root-CA.crt
-      register: crt_stat
+    - name: find IT Root CA Certificate
+      become: false
+      debug: msg={{ lookup('fileglob', '~/Downloads/RH*.crt') }}
 
-    - name: Move and rename the IT Root CA Certificate
-      command: mv /home/{{ host_username.stdout }}/Downloads/RH-IT-Root-CA.crt /etc/pki/tls/certs/RH-IT-Root-CA.pem
-      when: crt_stat.stat.exists
-
-    - name: check if .ovpn files exist
-      stat:
-        path: /home/{{ host_username.stdout }}/Downloads/*.ovpn
-      register: ovpn_stat
+    - name: Copy each file over that matches the given pattern
+      copy:
+        src: "{{ item }}"
+        dest: "/etc/pki/tls/certs/RH-IT-Root-CA.pem"
+        owner: "root"
+        mode: 644
+      with_fileglob:
+        - "/playbooks/files/fooapp/*"
 
     - name: Move .ovpn files from ~/Downloads/ to /etc/NetworkManager/system-connections/
-      command: mv /home/{{ host_username.stdout }}/Downloads/*.ovpn /etc/NetworkManager/system-connections/
-      when: ovpn_stat.stat.exists
+      become: false
+      debug: msg={{ lookup('fileglob', '~/Downloads/*.ovpn') }}
+
+    - name: Copy each file over that matches the given pattern
+      copy:
+        src: "{{ item }}"
+        dest: "/etc/NetworkManager/system-connections/"
+      with_fileglob:
+        - "/playbooks/files/fooapp/*"
 
     - name: restore default SELinux context recrusively (verbose + force)
       command: "{{ item }}"
@@ -121,10 +127,6 @@
         - restorecon -RvF /etc/pki/tls/certs/
         - restorecon -RvF /etc/NetworkManager/system-connections/
 
-    - name: change file permissions
-      file:
-        path: /etc/pki/tls/certs/RH-IT-Root-CA.pem
-        mode: 644
 # TODO: Test if that'll work with /etc/NetworkManager/system-connections/"*" instead of all this
     - name: ensure directories in /etc/NetworkManager/system-connections are 0755
       vars:
