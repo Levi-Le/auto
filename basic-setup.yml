@@ -2,7 +2,7 @@
 
 # This script installs some basic programs + sets up kinit and VPN. You need to download files and certificates beforehand from the google drive
 - name: basic setup, kinit & VPN
-  hosts: target
+  hosts: localhost
   become: true
   become_user: root
 
