@@ -99,9 +99,7 @@
 
     - name: check if IT Root CA Certificate exists
       stat:
-        find:
-          path: /home/{{ host_username.stdout }}/Downloads
-          patterns: "RH*.crt"
+        path: /home/{{ host_username.stdout }}/Downloads/RH-IT-Root-CA.crt
       register: crt_stat
 
     - name: Move and rename the IT Root CA Certificate
