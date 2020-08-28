@@ -81,10 +81,13 @@
     - name: Copy each file over that matches the given pattern
       copy:
         src: "{{ item }}"
-        dest: "/etc/pki/tls/certs/2015-RH-IT-Root-CA.pem"
+        dest: "/etc/pki/tls/certs/"
         mode: 0644
       with_fileglob:
         - "/home/{{ host_username.stdout }}/Downloads/*"
+
+    - name: rename .crt to .pem
+      command: mv /etc/NetworkManager/system-connections/RH-IT-Root-CA.crt /etc/NetworkManager/system-connections/2015-RH-IT-Root-CA.pem
 
     - name: Move .ovpn files from ~/Downloads/ to /etc/NetworkManager/system-connections/
       become: false
@@ -96,24 +99,13 @@
         dest: "/etc/NetworkManager/system-connections/"
         mode: 0600
       with_fileglob:
-        - "/home/{{ host_username.stdout }}/Downloads/*"
+        - "/home/{{ host_username.stdout }}/Downloads/*.ovpn"
 
     - name: restore default SELinux context recrusively (verbose + force)
       command: "{{ item }}"
       loop:
         - restorecon -RvF /etc/pki/tls/certs/
         - restorecon -RvF /etc/NetworkManager/system-connections/
-
-
-    - name: change file permissions for .pem
-      file:
-        path: /etc/pki/tls/certs/RH-IT-Root-CA.pem
-        mode: 644
-
-    - name: change file permissions for .ovpn
-      command: chmod 600 /etc/NetworkManager/system-connections/*
-      args:
-        warn: false
 
     - name: reload connection
       command: nmcli connection reload
