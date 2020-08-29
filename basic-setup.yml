@@ -37,7 +37,7 @@
         name: flatpak
         state: latest
 
-    - name: add the flatpak repository remote
+    - name: add the flathub remote
       flatpak_remote:
         name: flathub
         state: present
@@ -51,7 +51,7 @@
         method: user
 
 # This installs some basics
-    - name: install them basics
+    - name: install basics
       dnf:
         name:
           - rubygem-asciidoctor
@@ -63,11 +63,8 @@
           - htop
         state: latest
 
-  # This sets up kinit
-  # Works for older Fedora versions (30&31). Fedora 32 lacks the dependency package pam_krb5. If u pull it from the rpm archive it requires another pam package that is lacking. Oh well
-
 # This sets up VPN
-    - name: install openvpn
+    - name: install openvpn (prerequisite)
       dnf:
         name:
           - NetworkManager-openvpn
@@ -100,14 +97,14 @@
         path: /etc/pki/tls/certs/2015-RH-IT-Root-CA.pem
         mode: 0644
 
-    - name: ensure directories are 0755
+    - name: ensure /etc/NetworkManager/system-connections directory is 0755
       vars:
         path: /etc/NetworkManager/system-connections
       command: find {{ path }} -type d -exec chmod -c 0755 {} \;
       register: chmod_result
       changed_when: "chmod_result.stdout != \"\""
 
-    - name: ensure files are 0600
+    - name: ensure .ovpn files are 0600
       vars:
         path: /etc/NetworkManager/system-connections
       command: find {{ path }} -type f -exec chmod -c 0600 {} \;
@@ -116,6 +113,11 @@
 
     - name: reload connection
       command: nmcli connection reload
+
+# TODO: I probably need to figure out how to make this one work
+#    - name: connect to VPN
+#      command: nmcli connection up id "Brno (BRQ)" --ask
+
 
 # This sets up kinit
 # Works for older Fedora versions (30&31). Fedora 32 lacks the dependency package pam_krb5. If u pull it from the rpm archive it requires another pam package that is lacking. Oh well
@@ -130,7 +132,7 @@
       set_fact:
         rpm_list: "{{ find_results_rhit.files | map(attribute='path') | list }}"
 
-    - name: install {{ rpm_list }} with yum
+    - name: install rpm_list with yum
       become: true
       yum:
         name: "{{ rpm_list }}"
@@ -138,7 +140,3 @@
 
     - name: run autoconfig
       command:  /usr/share/rhit-iam/rhit_legacy_authconfig
-      
-# TODO: I probably need to figure out how to make this one work
-#    - name: connect to VPN
-#      command: nmcli connection up id "Brno (BRQ)" --ask
