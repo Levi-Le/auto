@@ -50,8 +50,7 @@
         name: gnome
         state: present
         flatpakrepo_url: https://sdk.gnome.org/gnome-apps.flatpakrepo
-        method: user
-
+        
     - name: install bluejeans
       flatpak:
         name: com.bluejeans.BlueJeans
