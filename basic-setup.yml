@@ -42,15 +42,9 @@
       flatpak_remote:
         name: flathub
         state: present
-        flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+        flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
         method: user
 
-    - name: add Gnome flatpak remote
-      flatpak_remote:
-        name: gnome
-        state: present
-        flatpakrepo_url: https://sdk.gnome.org/gnome-apps.flatpakrepo
-        
     - name: install bluejeans
       flatpak:
         name: com.bluejeans.BlueJeans
