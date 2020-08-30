@@ -51,7 +51,6 @@
       flatpak:
         name: com.bluejeans.BlueJeans
         state: present
-        remote: flathub
 
 # This installs some basics
 # TODO: idk if we need anything else. we probs do
