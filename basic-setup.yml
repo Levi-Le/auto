@@ -73,9 +73,21 @@
           - NetworkManager-openvpn-gnome
         state: latest
 
+    - name: find .crt files in ~/Downloads/
+      become: false
+      debug: msg={{ lookup('fileglob', '~/Downloads/*.crt') }}
+
+    - name: copy each .crt file that matches the given pattern to /etc/pki/tls/certs/
+      copy:
+        src: "{{ item }}"
+        dest: "/etc/pki/tls/certs/2015-RH-IT-Root-CA.pem"
+        mode: 0644
+      with_fileglob:
+        - "/home/{{ host_username.stdout }}/Downloads/*.crt"
+
 # TODO: maybe redo with find: module
-    - name: move and rename IT Root CA Certificate
-      command: mv /home/{{ host_username.stdout }}/Downloads/RH-IT-Root-CA.crt /etc/pki/tls/certs/2015-RH-IT-Root-CA.pem
+#    - name: move and rename IT Root CA Certificate
+#      command: mv /home/{{ host_username.stdout }}/Downloads/RH-IT-Root-CA.crt /etc/pki/tls/certs/2015-RH-IT-Root-CA.pem
 
 # TODO: redo with propper dir structure
     - name: find .ovpn files in ~/Downloads/
