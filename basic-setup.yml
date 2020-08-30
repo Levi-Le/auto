@@ -39,6 +39,7 @@
         state: latest
 
     - name: add Flathub flatpak remote
+      become: false
       flatpak_remote:
         name: flathub
         state: present
