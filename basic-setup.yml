@@ -43,7 +43,7 @@
       flatpak_remote:
         name: flathub
         state: present
-        flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
+        flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
         method: user
 
     - name: install bluejeans
@@ -51,6 +51,7 @@
       flatpak:
         name: com.bluejeans.BlueJeans
         state: present
+        repo: flathub
 
 # This installs some basics
 # TODO: idk if we need anything else. we probs do
