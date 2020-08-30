@@ -39,17 +39,16 @@
         state: latest
 
     - name: add Flathub flatpak remote
-      become: false
       flatpak_remote:
         name: flathub
         state: present
         flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
-        method: user
 
     - name: install bluejeans
       become: false
       flatpak:
         name: com.bluejeans.BlueJeans
+        remote: flathub
         state: present
 
 # This installs some basics
