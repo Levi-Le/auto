@@ -74,15 +74,21 @@
         state: latest
 
 # TODO: maybe redo with find: module
+    - name: get the name of .crt
+      find:
+        path: /home/{{ host_username.stdout }}/Downloads
+        patterns: RH*.crt
+      register: find_result_crt
+
     - name: move and rename IT Root CA Certificate
-      command: mv /home/{{ host_username.stdout }}/Downloads/RH-IT-Root-CA.crt /etc/pki/tls/certs/2015-RH-IT-Root-CA.pem
+      command: mv /home/{{ host_username.stdout }}/Downloads/{{ find_result_crt }} /etc/pki/tls/certs/2015-{{ find_result_crt }}.pem
 
 # TODO: redo with propper dir structure
     - name: find .ovpn files in ~/Downloads/
       become: false
       debug: msg={{ lookup('fileglob', '~/Downloads/*.ovpn') }}
 
-    - name: copy each .ovpn file that matches the given pattern to to /etc/NetworkManager/system-connections/
+    - name: copy each .ovpn file that matches the given pattern to /etc/NetworkManager/system-connections/
       copy:
         src: "{{ item }}"
         dest: "/etc/NetworkManager/system-connections/"
