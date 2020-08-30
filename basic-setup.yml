@@ -47,6 +47,7 @@
         method: user
 
     - name: install bluejeans
+      become: false
       flatpak:
         name: com.bluejeans.BlueJeans
         state: present
