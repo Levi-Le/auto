@@ -74,14 +74,8 @@
         state: latest
 
 # TODO: maybe redo with find: module
-    - name: get the name of .crt
-      find:
-        path: /home/{{ host_username.stdout }}/Downloads
-        patterns: RH*.crt
-      register: find_result_crt
-
     - name: move and rename IT Root CA Certificate
-      command: mv /home/{{ host_username.stdout }}/Downloads/{{ find_result_crt }} /etc/pki/tls/certs/2015-RH-IT-Root-CA.pem
+      command: mv /home/{{ host_username.stdout }}/Downloads/RH-IT-Root-CA.crt /etc/pki/tls/certs/2015-RH-IT-Root-CA.pem
 
 # TODO: redo with propper dir structure
     - name: find .ovpn files in ~/Downloads/
