@@ -20,7 +20,8 @@
         name: "*"
         state: latest
 
-# This enables repositories to download newdoc & downloads newdoc
+# This enables repository to download newdoc & downloads newdoc
+# Works for Fedora 31 or newer cause Marek doesn't support anything older
     - name: enable mareksu/newdoc repository
       command: dnf copr enable mareksu/newdoc -y
       args:
@@ -51,6 +52,7 @@
         method: user
 
 # This installs some basics
+# TODO: idk if we need anything else. we probs do
     - name: install basics
       dnf:
         name:
@@ -71,20 +73,22 @@
           - NetworkManager-openvpn-gnome
         state: latest
 
+# TODO: maybe redo with find: module
     - name: move and rename IT Root CA Certificate
       command: mv /home/{{ host_username.stdout }}/Downloads/RH-IT-Root-CA.crt /etc/pki/tls/certs/2015-RH-IT-Root-CA.pem
 
-    - name: move .ovpn files from ~/Downloads/ to /etc/NetworkManager/system-connections/
+# TODO: redo with propper dir structure
+    - name: find .ovpn files in ~/Downloads/
       become: false
       debug: msg={{ lookup('fileglob', '~/Downloads/*.ovpn') }}
 
-    - name: copy each file over that matches the given pattern
+    - name: copy each .ovpn file that matches the given pattern to to /etc/NetworkManager/system-connections/
       copy:
         src: "{{ item }}"
         dest: "/etc/NetworkManager/system-connections/"
         mode: 0600
       with_fileglob:
-        - "/home/{{ host_username.stdout }}/Downloads/*"
+        - "/home/{{ host_username.stdout }}/Downloads/*.ovpn"
 
     - name: restore default SELinux context recrusively (verbose + force)
       command: "{{ item }}"
@@ -114,15 +118,11 @@
     - name: reload connection
       command: nmcli connection reload
 
-# TODO: I probably need to figure out how to make this one work
-#    - name: connect to VPN
-#      command: nmcli connection up id "Brno (BRQ)" --ask
-
-
 # This sets up kinit
 # Works for older Fedora versions (30&31). Fedora 32 lacks the dependency package pam_krb5. If u pull it from the rpm archive it requires another pam package that is lacking. Oh well
 
-    - name: get name of the file we just downloaded
+# I know you can install the rpm by name but this is more fun
+    - name: get name of the .rpm
       find:
         path: /home/{{ host_username.stdout }}/Downloads
         patterns: "rhit*"
