@@ -49,6 +49,7 @@
       flatpak:
         name: com.bluejeans.BlueJeans
         remote: flathub
+        method: system
         state: present
 
 # This installs some basics
