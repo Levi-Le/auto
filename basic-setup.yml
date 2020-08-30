@@ -51,7 +51,7 @@
       flatpak:
         name: com.bluejeans.BlueJeans
         state: present
-        repo: flathub
+        remote: flathub
 
 # This installs some basics
 # TODO: idk if we need anything else. we probs do
