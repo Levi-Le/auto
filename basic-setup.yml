@@ -38,18 +38,25 @@
         name: flatpak
         state: latest
 
-    - name: add the flathub remote
+    - name: add Flathub flatpak remote
       flatpak_remote:
         name: flathub
         state: present
         flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
         method: user
 
+    - name: add Gnome flatpak remote
+      flatpak_remote:
+        name: gnome
+        state: present
+        flatpakrepo_url: https://sdk.gnome.org/gnome-apps.flatpakrepo
+        method: user
+
     - name: install bluejeans
       flatpak:
         name: com.bluejeans.BlueJeans
         state: present
-        method: user
+        remote: flathub
 
 # This installs some basics
 # TODO: idk if we need anything else. we probs do
