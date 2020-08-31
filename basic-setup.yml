@@ -44,12 +44,13 @@
         state: present
         flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
 
-    - name: install bluejeans
-      flatpak:
-        name: com.bluejeans.BlueJeans
-        remote: flathub
-        method: system
-        state: present
+# TODO: BJ started to lag on install, test later
+#    - name: install bluejeans
+#      flatpak:
+#        name: com.bluejeans.BlueJeans
+#        remote: flathub
+#        method: system
+#        state: present
 
 # This installs some basics
 # TODO: idk if we need anything else. we probs do
