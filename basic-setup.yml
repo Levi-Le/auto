@@ -45,7 +45,6 @@
         flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
 
     - name: install bluejeans
-      become: false
       flatpak:
         name: com.bluejeans.BlueJeans
         remote: flathub
